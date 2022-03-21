@@ -12,7 +12,7 @@ namespace BulkExportDownload.Properties {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "15.5.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "17.0.3.0")]
     internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
         
         private static Settings defaultInstance = ((Settings)(global::System.Configuration.ApplicationSettingsBase.Synchronized(new Settings())));
@@ -25,7 +25,7 @@ namespace BulkExportDownload.Properties {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("https://dailyupdate.infoland.local/iprova")]
+        [global::System.Configuration.DefaultSettingValueAttribute("https://organisationiprovaurl.com")]
         public string Url {
             get {
                 return ((string)(this["Url"]));
@@ -34,7 +34,7 @@ namespace BulkExportDownload.Properties {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("job")]
+        [global::System.Configuration.DefaultSettingValueAttribute("username")]
         public string Username {
             get {
                 return ((string)(this["Username"]));
@@ -43,7 +43,7 @@ namespace BulkExportDownload.Properties {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("infoland")]
+        [global::System.Configuration.DefaultSettingValueAttribute("password")]
         public string Password {
             get {
                 return ((string)(this["Password"]));
@@ -52,7 +52,7 @@ namespace BulkExportDownload.Properties {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("j.kramer@infoland.nl")]
+        [global::System.Configuration.DefaultSettingValueAttribute("sendtome@mydomain.com")]
         public string ResponseEmailaddress {
             get {
                 return ((string)(this["ResponseEmailaddress"]));
@@ -61,7 +61,7 @@ namespace BulkExportDownload.Properties {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("26a3a891-eecc-4130-bcfe-1bbc051b5aed")]
+        [global::System.Configuration.DefaultSettingValueAttribute("MyiProvaAPIKey")]
         public string ApiKey {
             get {
                 return ((string)(this["ApiKey"]));
@@ -70,7 +70,7 @@ namespace BulkExportDownload.Properties {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("j.kramer@infoland.nl")]
+        [global::System.Configuration.DefaultSettingValueAttribute("sendfromme@mydomain.com")]
         public string SenderEmailAddress {
             get {
                 return ((string)(this["SenderEmailAddress"]));
@@ -79,7 +79,7 @@ namespace BulkExportDownload.Properties {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("4, c:\\bulkexports")]
+        [global::System.Configuration.DefaultSettingValueAttribute("3, c:\\bulkexports; 2, \\\\file\\Infoland\\Bulkexports")]
         public string SaveLocations {
             get {
                 return ((string)(this["SaveLocations"]));
@@ -89,6 +89,15 @@ namespace BulkExportDownload.Properties {
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool DownloadOnly {
+            get {
+                return ((bool)(this["DownloadOnly"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
         public bool DebugMode {
             get {
                 return ((bool)(this["DebugMode"]));
@@ -97,10 +106,64 @@ namespace BulkExportDownload.Properties {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("smtprelay.infoland.local")]
+        [global::System.Configuration.DefaultSettingValueAttribute("mymailserver.mydomain")]
         public string MailServer {
             get {
                 return ((string)(this["MailServer"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("25")]
+        public int MailPort {
+            get {
+                return ((int)(this["MailPort"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool MailSsl {
+            get {
+                return ((bool)(this["MailSsl"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string MailUsername {
+            get {
+                return ((string)(this["MailUsername"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string MailPassword {
+            get {
+                return ((string)(this["MailPassword"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool OverwriteFiles {
+            get {
+                return ((bool)(this["OverwriteFiles"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool DownloadReadyWithErrors {
+            get {
+                return ((bool)(this["DownloadReadyWithErrors"]));
             }
         }
     }

@@ -44,6 +44,7 @@ namespace BulkExportDownload
                 if (bulkExport == null)
                 {
                     string message = "Could not retrieve bulkexport with id " + bulkExportId;
+                    Console.WriteLine(message);
                     addMessageToEmailBody(message);
                     continue; //if we could not retrieve this bulkexport we continue with the next bulkexport
                 }
@@ -52,32 +53,41 @@ namespace BulkExportDownload
                 {
                     //send e-mailmessage that bulk export settings are not correct for download
                     string message = "The bulkexport " + bulkExport.name + " is not configured to allow download (manually of via the API)";
+                    Console.WriteLine(message);
                     addMessageToEmailBody(message);
                     continue;
                 }
 
 
-                if (bulkExport.state == "ready")
+                if ((bulkExport.state == "ready")||((bulkExport.state == "readyWithErrors") && (Properties.Settings.Default.DownloadReadyWithErrors)))
                 {
+                    //Continue if state=ready or if state is readyWithErrors but only if user wants it
                     try
                     {
-                        DeleteBackups(bulkExportId, savePath);
-                        BackupBulkExport(savePath);
+                        if (!Properties.Settings.Default.DownloadOnly)
+                        {
+                            DeleteBackups(bulkExportId, savePath);
+                            BackupBulkExport(savePath);
+                        }
 
                         //download new bulkexport, continue to next bulkexport if this fails. Errormessage is added to mail inside the DownloadBulkExport method
                         if (!DownloadBulkExport(client, bulkExportId, credentials, zipPath, bulkExport.name))
                             continue;
 
-                        //extract new bulkexport
-                        ExtractBulkExport(zipPath, savePath);
+                        if (!Properties.Settings.Default.DownloadOnly)
+                        {
+                            //extract new bulkexport
+                            ExtractBulkExport(zipPath, savePath, Properties.Settings.Default.OverwriteFiles);
 
-                        //delete backup if download en extract succeeds
-                        DeleteBackups(bulkExportId, savePath);
-                        DeleteZip(zipPath);
+                            //delete backup if download en extract succeeds
+                            DeleteBackups(bulkExportId, savePath);
+                            DeleteZip(zipPath);
+                        }
                     }
                     catch (Exception e)
                     {
                         string message = "An error occurred when handling the bulkexport " + bulkExport.name + ":\n" + e.Message;
+                        Console.WriteLine(message);
                         //addMessageToEmailBody(message);
                         continue;
                     }
@@ -85,6 +95,7 @@ namespace BulkExportDownload
                 else
                 {
                     string message = "The bulkexport '" + bulkExport.name + "' could not be downloaded, because the status of the bulkexport is '" + bulkExport.state + "'";
+                    Console.WriteLine(message);
                     addMessageToEmailBody(message);
                 }
             }
@@ -128,6 +139,7 @@ namespace BulkExportDownload
                 {
                     message += ":\n " + response.ErrorMessage;
                 }
+                Console.WriteLine(message);
                 addMessageToEmailBody(message);
                 return null;
             }
@@ -207,16 +219,49 @@ namespace BulkExportDownload
             if (!blnSuccess)
             {
                 string message = "Could not download zip-file for bulkexport " + bulkExportName;
+                Console.WriteLine(message);
                 addMessageToEmailBody(message);
             }
 
             return blnSuccess;
         }
 
-        static private void ExtractBulkExport(string zipPath, string savePath)
+        static private void ExtractBulkExport(string zipPath, string savePath, Boolean overwrite)
         {
             Console.WriteLine("Extracting zip-file");
-            ZipFile.ExtractToDirectory(zipPath, savePath);
+
+            // Normalizes the path.
+            savePath = Path.GetFullPath(savePath);
+
+            // Ensures that the last character on the extraction path is the directory separator char.
+            // Without this, a malicious zip file could try to traverse outside of the expected extraction path.
+            if (!savePath.EndsWith(Path.DirectorySeparatorChar.ToString(), StringComparison.Ordinal))
+                savePath += Path.DirectorySeparatorChar;
+
+            // Read zip file and extract.
+            using (ZipArchive archive = ZipFile.OpenRead(zipPath))
+            {
+                foreach (ZipArchiveEntry entry in archive.Entries)
+                {
+                    // Gets the full path to ensure that relative segments are removed.
+                    string destinationPath = Path.GetFullPath(Path.Combine(savePath, entry.FullName));
+
+                    // Directories are not created, create destination directory.
+                    string entryPath = Path.GetDirectoryName(destinationPath);
+                    if (!Directory.Exists(entryPath))
+                    {
+                        Directory.CreateDirectory(entryPath);
+                    }
+
+                    // Ordinal match is safest, case-sensitive volumes can be mounted within volumes that are case-insensitive.
+                    if (destinationPath.StartsWith(savePath, StringComparison.Ordinal))
+                    {
+                        entry.ExtractToFile(destinationPath, overwrite);
+                    }
+
+                }
+            }
+
         }
 
         static private void addMessageToEmailBody(string message)
@@ -235,9 +280,17 @@ namespace BulkExportDownload
             MailMessage mail = new MailMessage(from, to);
             SmtpClient client = new SmtpClient();
             mail.IsBodyHtml = false;
-            client.Port = 25;
+            client.Port = Properties.Settings.Default.MailPort;
             client.DeliveryMethod = SmtpDeliveryMethod.Network;
-            client.UseDefaultCredentials = false;
+            if (Properties.Settings.Default.MailSsl)
+            {
+                client.Credentials = new System.Net.NetworkCredential(Properties.Settings.Default.MailUsername,Properties.Settings.Default.MailPassword);
+                client.EnableSsl = true;
+            }
+            else
+            {
+                client.UseDefaultCredentials = false;
+            }
             client.Host = Properties.Settings.Default.MailServer;
             mail.Subject = "Error downloading bulkexports";
             mail.Body = emailBody;
